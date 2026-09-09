@@ -53,7 +53,8 @@ public class ProductService {
                 productEntity.getName(),
                 productEntity.getPrice(),
                 productEntity.getCategory(),
-                productEntity.getStatus()
+                productEntity.getStatus(),
+                productEntity.getCreatedAt()
         );
     }
     public ProductDetailsResponse toDetails(ProductEntity productEntity){
@@ -64,7 +65,9 @@ public class ProductService {
                 productEntity.getStock(),
                 productEntity.getDescription(),
                 productEntity.getStatus(),
-                productEntity.getCategory()
+                productEntity.getCategory(),
+                productEntity.getCreatedAt(),
+                productEntity.getUpdatedAt()
         );
     }
 
