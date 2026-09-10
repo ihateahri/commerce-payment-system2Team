@@ -22,6 +22,10 @@ public enum ErrorCode {
     INSUFFICIENT_STOCK(HttpStatus.CONFLICT, "PRODUCT_002", "재고가 부족합니다."),
     INVALID_PRICE(HttpStatus.BAD_REQUEST, "PRODUCT_003", "가격은 0 이상이어야 합니다."),
     INVALID_STOCK(HttpStatus.BAD_REQUEST, "PRODUCT_004", "재고는 0 이상이어야 합니다."),
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "PRODUCT_005", "페이지 번호는 0이상이어야 합니다."),
+    INVALID_PAGE_SIZE(HttpStatus.BAD_REQUEST, "PRODUCT_006", "페이지 크기가 올바르지 않습니다."),
+    INVALID_PRICE_RANGE(HttpStatus.BAD_REQUEST, "PRODUCT_007", "최소 가격은 최대 가격보다 클수 없습니다.."),
+    INVALID_SORT(HttpStatus.BAD_REQUEST, "PRODUCT_008", "잘못된 정렬 조건입니다."),
 
     // Cart
     CART_EMPTY(HttpStatus.BAD_REQUEST, "CART_001", "장바구니가 비어있습니다."),
