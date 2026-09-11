@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "Cart",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"member_id"})
 })
-public class CartEntity extends BaseEntity {
+public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +22,7 @@ public class CartEntity extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public CartEntity(Member member) {
+    public Cart(Member member) {
         this.member = member;
     }
 
