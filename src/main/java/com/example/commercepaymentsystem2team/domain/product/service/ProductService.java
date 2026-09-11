@@ -7,7 +7,7 @@ import com.example.commercepaymentsystem2team.domain.product.dto.response.PageRe
 import com.example.commercepaymentsystem2team.domain.product.dto.response.ProductDetailsResponse;
 import com.example.commercepaymentsystem2team.domain.product.dto.response.ProductResponse;
 import com.example.commercepaymentsystem2team.domain.product.entity.ProductCategory;
-import com.example.commercepaymentsystem2team.domain.product.entity.ProductEntity;
+import com.example.commercepaymentsystem2team.domain.product.entity.Product;
 import com.example.commercepaymentsystem2team.domain.product.entity.ProductStatus;
 import com.example.commercepaymentsystem2team.domain.product.repository.ProductRepository;
 import com.example.commercepaymentsystem2team.domain.product.specification.ProductSpecification;
@@ -37,12 +37,12 @@ public class ProductService {
 
         Pageable pageable = PageRequest.of(page, size, resolveSort(sort));
 
-        Specification<ProductEntity> spec = Specification.where(ProductSpecification.statusIn(VISIBLE_STATUSES))
+        Specification<Product> spec = Specification.where(ProductSpecification.statusIn(VISIBLE_STATUSES))
                 .and(ProductSpecification.hasCategory(category))
                 .and(ProductSpecification.priceGte(minPrice))
                 .and(ProductSpecification.priceLte(maxPrice));
 
-        Page<ProductEntity> result=productRepository.findAll(spec,pageable);
+        Page<Product> result=productRepository.findAll(spec,pageable);
 
         List<ProductResponse> content= result.getContent().stream()
                 .map(this::toList)
@@ -75,48 +75,48 @@ public class ProductService {
 
     //단건 조회
     public ProductDetailsResponse findById(Long id){
-        ProductEntity productEntity = findProductEntity(id);
-        return toDetails(productEntity);
+        Product product = findProductEntity(id);
+        return toDetails(product);
     }
 
     //수정
     @Transactional
     public ProductDetailsResponse update(Long id, UpdateRequest request){
-        ProductEntity productEntity = findProductEntity(id);
-        productEntity.update(
+        Product product = findProductEntity(id);
+        product.update(
                 request.name(),
                 request.price(),
                 request.description(),
                 request.category());
-        return toDetails(productEntity);
+        return toDetails(product);
 
     }
 
-    public ProductEntity findProductEntity(Long id){
+    public Product findProductEntity(Long id){
         return productRepository.findById(id).orElseThrow(()->new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     } // 추후 다른 도메인에서 상품 엔티티 사용할때
 
-    public ProductResponse toList(ProductEntity productEntity){
+    public ProductResponse toList(Product product){
         return new ProductResponse(
-                productEntity.getId(),
-                productEntity.getName(),
-                productEntity.getPrice(),
-                productEntity.getCategory(),
-                productEntity.getStatus(),
-                productEntity.getCreatedAt()
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getCategory(),
+                product.getStatus(),
+                product.getCreatedAt()
         );
     }
-    public ProductDetailsResponse toDetails(ProductEntity productEntity){
+    public ProductDetailsResponse toDetails(Product product){
         return new ProductDetailsResponse(
-                productEntity.getId(),
-                productEntity.getName(),
-                productEntity.getPrice(),
-                productEntity.getStock(),
-                productEntity.getDescription(),
-                productEntity.getStatus(),
-                productEntity.getCategory(),
-                productEntity.getCreatedAt(),
-                productEntity.getUpdatedAt()
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getStock(),
+                product.getDescription(),
+                product.getStatus(),
+                product.getCategory(),
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 
