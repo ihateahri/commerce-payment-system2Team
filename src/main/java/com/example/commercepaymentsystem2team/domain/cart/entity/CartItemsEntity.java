@@ -2,7 +2,7 @@ package com.example.commercepaymentsystem2team.domain.cart.entity;
 
 import com.example.commercepaymentsystem2team.common.entity.BaseEntity;
 import com.example.commercepaymentsystem2team.common.exception.BusinessException;
-import com.example.commercepaymentsystem2team.domain.product.entity.Product;
+import com.example.commercepaymentsystem2team.domain.product.entity.ProductEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,23 +16,23 @@ import static com.example.commercepaymentsystem2team.common.exception.ErrorCode.
 @Table(name = "Cart_Items",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"cart_id","product_id"})
 })
-public class CartItems extends BaseEntity {
+public class CartItemsEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    private CartEntity cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private ProductEntity product;
 
     @Column(nullable = false,columnDefinition = "int UNSIGNED DEFAULT 1")
     private Integer quantity;
 
-    public CartItems(Cart cart, Product product, Integer quantity) {
+    public CartItemsEntity(CartEntity cart, ProductEntity product, Integer quantity) {
         this.cart = cart;
         this.product = product;
         if (quantity<1){

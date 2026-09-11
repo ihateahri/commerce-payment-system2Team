@@ -4,7 +4,7 @@ import com.example.commercepaymentsystem2team.domain.cart.dto.request.AddCartReq
 import com.example.commercepaymentsystem2team.domain.cart.service.CartService;
 import com.example.commercepaymentsystem2team.domain.member.entity.Member;
 import com.example.commercepaymentsystem2team.domain.member.service.MemberService;
-import com.example.commercepaymentsystem2team.domain.product.entity.Product;
+import com.example.commercepaymentsystem2team.domain.product.entity.ProductEntity;
 import com.example.commercepaymentsystem2team.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class CartFacade {
     @Transactional
     public Long addItem(Long memberId, AddCartRequest request){
         Member member = memberService.findMember(memberId);
-        Product product = productService.findProductEntity(request.productId());
-        return cartService.addItem(member, product,request.quantity());
+        ProductEntity productEntity = productService.findProductEntity(request.productId());
+        return cartService.addItem(member,productEntity,request.quantity());
     }
 }

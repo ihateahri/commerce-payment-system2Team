@@ -4,12 +4,12 @@ import com.example.commercepaymentsystem2team.common.exception.BusinessException
 import com.example.commercepaymentsystem2team.common.exception.ErrorCode;
 import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartItemsResponse;
 import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartResponse;
-import com.example.commercepaymentsystem2team.domain.cart.entity.Cart;
-import com.example.commercepaymentsystem2team.domain.cart.entity.CartItems;
+import com.example.commercepaymentsystem2team.domain.cart.entity.CartEntity;
+import com.example.commercepaymentsystem2team.domain.cart.entity.CartItemsEntity;
 import com.example.commercepaymentsystem2team.domain.cart.repository.CartItemsRepository;
 import com.example.commercepaymentsystem2team.domain.cart.repository.CartRepository;
 import com.example.commercepaymentsystem2team.domain.member.entity.Member;
-import com.example.commercepaymentsystem2team.domain.product.entity.Product;
+import com.example.commercepaymentsystem2team.domain.product.entity.ProductEntity;
 import com.example.commercepaymentsystem2team.domain.product.entity.ProductStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,16 +40,16 @@ public class CartService {
     }
 
     //장바구니 상품 담기
-    public Long addItem(Member member, Product product, Integer quantity){
+    public Long addItem(Member member, ProductEntity product, Integer quantity){
         if (product.getStatus()== ProductStatus.SOLD_OUT || product.getStatus() == ProductStatus.DISCONTINUED){
             throw new BusinessException(ErrorCode.PRODUCT_NOT_AVAILABLE); //품절, 단종 상품
         }
-        Cart cart = cartRepository.findByMember_Id(member.getId())
-                .orElseGet(()->cartRepository.save(new Cart(member)));
-        Optional<CartItems> existing=cartItemsRepository.findByCart_Member_IdAndProduct_Id(member.getId(), product.getId());
+        CartEntity cart = cartRepository.findByMember_Id(member.getId())
+                .orElseGet(()->cartRepository.save(new CartEntity(member)));
+        Optional<CartItemsEntity> existing=cartItemsRepository.findByCart_Member_IdAndProduct_Id(member.getId(), product.getId());
 
         if (existing.isPresent()){
-            CartItems found=existing.get();
+            CartItemsEntity found=existing.get();
             int newQuantity = found.getQuantity() + quantity;
             if (newQuantity >product.getStock()){
                 throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
@@ -60,21 +60,21 @@ public class CartService {
             if (quantity>product.getStock()){
                 throw  new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
             }
-            CartItems cartItems = new CartItems(cart, product, quantity);
-            return cartItemsRepository.save(cartItems).getId();
+            CartItemsEntity cartItemsEntity = new CartItemsEntity(cart, product, quantity);
+            return cartItemsRepository.save(cartItemsEntity).getId();
         }
     }
 
     //수량 변경
     public void updateQuantity(Long memberId,Long id,Integer quantity){
-        CartItems cartItems =cartItemsRepository.findById(id)
+        CartItemsEntity cartItemsEntity=cartItemsRepository.findById(id)
                 .filter(ci -> ci.getMemberId().equals(memberId))
                 .orElseThrow(()->new BusinessException(CART_ITEM_NOT_FOUND));
 
-        if (quantity > cartItems.getProduct().getStock()){
+        if (quantity > cartItemsEntity.getProduct().getStock()){
             throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
         }
-        cartItems.changeQuantity(quantity);
+        cartItemsEntity.changeQuantity(quantity);
     }
 
     //장바구니 개별 삭제
@@ -91,16 +91,16 @@ public class CartService {
     }
 
     //
-    private CartItemsResponse toResponse(CartItems cartItems){
+    private CartItemsResponse toResponse(CartItemsEntity cartItemsEntity){
         return new CartItemsResponse(
-                cartItems.getId(),
-                cartItems.getProduct().getId(),
-                cartItems.getProduct().getName(),
-                cartItems.getProduct().getPrice(),
-                cartItems.getQuantity(),
-                cartItems.getProduct().getStatus(),
-                cartItems.getCreatedAt(),
-                cartItems.getProduct().getStock()
+                cartItemsEntity.getId(),
+                cartItemsEntity.getProduct().getId(),
+                cartItemsEntity.getProduct().getName(),
+                cartItemsEntity.getProduct().getPrice(),
+                cartItemsEntity.getQuantity(),
+                cartItemsEntity.getProduct().getStatus(),
+                cartItemsEntity.getCreatedAt(),
+                cartItemsEntity.getProduct().getStock()
         );
     }
 
