@@ -4,7 +4,7 @@ public enum PaymentStatus {
     IN_PROGRESS {
         @Override
         public boolean canTransitTo(PaymentStatus target) {
-            return target == PAID || target == FAILED;
+            return target == PAID || target == FAILED || target == CANCELLED;
         }
     },
 

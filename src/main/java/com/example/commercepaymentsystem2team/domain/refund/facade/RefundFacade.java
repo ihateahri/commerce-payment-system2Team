@@ -24,15 +24,15 @@ public class RefundFacade {
     public RefundResponse cancel(RefundRequest request, Long memberId) {
         Order order = orderService.getCancelableOrder(request.orderId(), memberId);
 
-        Payment payment = paymentService.getByOrder(order);
+        Payment payment = paymentService.findByOrderIdAndMemberId(order.getId(), memberId);
 
         Refund refund = null;
 
-        boolean approved = payment.isApproved();
+        boolean wasPaid = payment.isPaid();
 
         paymentService.cancelPayment(payment);
 
-        if (approved) {
+        if (wasPaid) {
             refund = refundService.create(payment, request.reason());
         }
 

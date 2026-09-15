@@ -25,13 +25,13 @@ public class Refund extends BaseEntity {
     private String reason;
 
     @Column(nullable = false)
-    private Long amount;
+    private long amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RefundStatus status;
 
-    public Refund(Payment payment, String reason, Long amount) {
+    public Refund(Payment payment, String reason, long amount) {
         this.payment = payment;
         this.reason = reason;
         this.amount = amount;

@@ -67,4 +67,8 @@ public class Payment extends BaseEntity {
         this.status = status;
     }
 
+    public boolean isPaid() {
+        return this.status == PaymentStatus.PAID;
+    }
+
 }
