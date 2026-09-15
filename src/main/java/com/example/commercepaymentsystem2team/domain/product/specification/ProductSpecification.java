@@ -28,6 +28,6 @@ public class ProductSpecification {
 
     //판매상태 있을시
     public static Specification<Product> statusIn(List<ProductStatus> statuses){
-        return (root,query,cb)->root.get("statuses").in(statuses);
+        return (root,query,cb)->root.get("status").in(statuses);
     }
 }
