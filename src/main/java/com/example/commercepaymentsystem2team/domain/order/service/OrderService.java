@@ -11,6 +11,8 @@ import com.example.commercepaymentsystem2team.domain.order.dto.response.OrderPag
 import com.example.commercepaymentsystem2team.domain.order.dto.response.OrderPreviewResponse;
 import com.example.commercepaymentsystem2team.domain.order.entity.Order;
 import com.example.commercepaymentsystem2team.domain.order.entity.OrderItem;
+import com.example.commercepaymentsystem2team.domain.order.entity.OrderStatus;
+import com.example.commercepaymentsystem2team.domain.order.repository.OrderItemRepository;
 import com.example.commercepaymentsystem2team.domain.order.repository.OrderRepository;
 import com.example.commercepaymentsystem2team.domain.payment.entity.Payment;
 import com.example.commercepaymentsystem2team.domain.payment.repository.PaymentRepository;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class OrderService {
 
+    private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
@@ -65,16 +68,17 @@ public class OrderService {
             Product product = productRepository
                     .findById(itemRequest.productId())
                     .orElseThrow(() ->
-                            new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
+                            new BusinessException(
+                                    ErrorCode.PRODUCT_NOT_FOUND
+                            )
                     );
 
 
-            // 3. 재고 검증
-            // Product에는 현재 재고 차감 메서드가 없기 때문에
-            // OrderService에서는 재고가 충분한지만 확인
-            if (product.getStock() < itemRequest.quantity()) {
-                throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
-            }
+            // 3. 재고 검증 + 재고 차감
+            product.decreaseStock(
+                    itemRequest.quantity()
+            );
+
 
             // 4. 주문 상품 생성
             OrderItem orderItem = OrderItem.create(
@@ -88,14 +92,16 @@ public class OrderService {
 
             // 5. 상품별 주문 금액 계산
             long itemTotalAmount =
-                    product.getPrice() * itemRequest.quantity();
+                    product.getPrice()
+                            * itemRequest.quantity();
 
             totalAmount += itemTotalAmount;
         }
 
 
         // 6. 주문 번호 생성
-        String orderNumber = UUID.randomUUID().toString();
+        String orderNumber =
+                UUID.randomUUID().toString();
 
 
         // 7. 주문 생성
@@ -113,14 +119,16 @@ public class OrderService {
 
 
         // 9. 주문 저장
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder =
+                orderRepository.save(order);
 
 
         // 10. 결제 사전 기록 생성
-        // Payment 생성 시 기본 상태는 IN_PROGRESS
         Payment payment = new Payment(
                 savedOrder,
-                Math.toIntExact(savedOrder.getTotalAmount()),
+                Math.toIntExact(
+                        savedOrder.getTotalAmount()
+                ),
                 member
         );
 
@@ -145,16 +153,25 @@ public class OrderService {
             Long orderId
     ) {
 
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository
+                .findById(orderId)
                 .orElseThrow(() ->
-                        new BusinessException(ErrorCode.ORDER_NOT_FOUND)
+                        new BusinessException(
+                                ErrorCode.ORDER_NOT_FOUND
+                        )
                 );
 
 
         // 본인의 주문인지 확인
-        if (!order.getMember().getId().equals(memberId)) {
-            throw new BusinessException(ErrorCode.NO_AUTHORITY);
+        if (!order.getMember()
+                .getId()
+                .equals(memberId)) {
+
+            throw new BusinessException(
+                    ErrorCode.NO_AUTHORITY
+            );
         }
+
 
         return OrderDetailResponse.from(order);
     }
@@ -186,8 +203,8 @@ public class OrderService {
             OrderCreateRequest request
     ) {
 
-        List<OrderPreviewResponse.OrderPreviewItemResponse> previewItems =
-                new ArrayList<>();
+        List<OrderPreviewResponse.OrderPreviewItemResponse>
+                previewItems = new ArrayList<>();
 
         long totalAmount = 0L;
 
@@ -199,18 +216,22 @@ public class OrderService {
             Product product = productRepository
                     .findById(itemRequest.productId())
                     .orElseThrow(() ->
-                            new BusinessException(ErrorCode.PRODUCT_NOT_FOUND)
+                            new BusinessException(
+                                    ErrorCode.PRODUCT_NOT_FOUND
+                            )
                     );
 
 
             // 상품별 금액 계산
             long totalPrice =
-                    product.getPrice() * itemRequest.quantity();
+                    product.getPrice()
+                            * itemRequest.quantity();
 
 
             // 미리보기 상품 정보 생성
             previewItems.add(
-                    new OrderPreviewResponse.OrderPreviewItemResponse(
+                    new OrderPreviewResponse
+                            .OrderPreviewItemResponse(
                             product.getId(),
                             product.getName(),
                             product.getPrice(),
@@ -227,6 +248,73 @@ public class OrderService {
         return new OrderPreviewResponse(
                 previewItems,
                 totalAmount
+        );
+    }
+
+
+    // =========================
+    // 취소 가능한 주문 조회
+    // 결제 도메인에서 사용
+    // =========================
+    public Order getCancelableOrder(
+            Long orderId,
+            Long memberId
+    ) {
+
+        // 주문 조회
+        Order order = orderRepository
+                .findById(orderId)
+                .orElseThrow(() ->
+                        new BusinessException(
+                                ErrorCode.ORDER_NOT_FOUND
+                        )
+                );
+
+
+        // 본인의 주문인지 확인
+        if (!order.isOwnedBy(memberId)) {
+            throw new BusinessException(
+                    ErrorCode.NO_AUTHORITY
+            );
+        }
+
+
+        // 이미 취소된 주문인지 확인
+        if (order.getStatus()
+                == OrderStatus.CANCELED) {
+
+            throw new BusinessException(
+                    ErrorCode.INVALID_ORDER_STATUS
+            );
+        }
+
+
+        return order;
+    }
+
+
+    // =========================
+    // 주문 취소 처리
+    // 결제 도메인에서 사용
+    // =========================
+    @Transactional
+    public void cancel(Order order) {
+
+        // 1. 주문 상태를 취소로 변경
+        order.cancel();
+
+
+        // 2. 주문 상품 조회
+        List<OrderItem> orderItems =
+                orderItemRepository.findByOrder(order);
+
+
+        // 3. 주문했던 수량만큼 재고 복구
+        orderItems.forEach(item ->
+                item.getProduct()
+                        .increaseStock(
+                                item.getQuantity()
+                        )
         );
     }
 }
