@@ -87,4 +87,11 @@ public class Order extends BaseEntity {
         this.status = OrderStatus.CANCELED;
         this.cancelReason = reason;
     }
+    public void cancel() {
+        this.status = OrderStatus.CANCELED;
+    }
+
+    public boolean isOwnedBy(Long memberId) {
+        return this.member.getId().equals(memberId);
+    }
 }

@@ -30,7 +30,7 @@ public class RefundFacade {
 
         boolean approved = payment.isApproved();
 
-        paymentService.cancel(payment);
+        paymentService.cancelPayment(payment);
 
         if (approved) {
             refund = refundService.create(payment, request.reason());

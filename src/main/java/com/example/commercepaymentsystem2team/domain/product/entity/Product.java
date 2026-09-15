@@ -1,6 +1,8 @@
 package com.example.commercepaymentsystem2team.domain.product.entity;
 
 import com.example.commercepaymentsystem2team.common.entity.BaseEntity;
+import com.example.commercepaymentsystem2team.common.exception.BusinessException;
+import com.example.commercepaymentsystem2team.common.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,6 +54,20 @@ public class Product extends BaseEntity {
         if (category != null) {
             this.category = category;
         }
+    }
+
+    public void increaseStock(int quantity) {
+        this.stock += quantity;
+    }
+
+    public void decreaseStock(int quantity) {
+        if (this.stock < quantity) {
+            throw new BusinessException(
+                    ErrorCode.INSUFFICIENT_STOCK
+            );
+        }
+
+        this.stock -= quantity;
     }
 
 }
