@@ -36,7 +36,7 @@ public class RefundFacade {
             refund = refundService.create(payment, request.reason());
         }
 
-        orderService.cancel(order);
+        orderService.cancel(order,request.reason());
 
         return RefundResponse.of(order, payment, refund, request.reason());
     }

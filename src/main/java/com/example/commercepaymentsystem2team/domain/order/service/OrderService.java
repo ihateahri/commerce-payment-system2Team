@@ -266,7 +266,7 @@ public class OrderService {
                 .findById(orderId)
                 .orElseThrow(() ->
                         new BusinessException(
-                                ErrorCode.ORDER_NOT_FOUND
+                                ErrorCode.REFUND_ORDER_NOT_FOUND
                         )
                 );
 
@@ -274,7 +274,7 @@ public class OrderService {
         // 본인의 주문인지 확인
         if (!order.isOwnedBy(memberId)) {
             throw new BusinessException(
-                    ErrorCode.NO_AUTHORITY
+                    ErrorCode.ORDER_FORBIDDEN
             );
         }
 
@@ -284,7 +284,7 @@ public class OrderService {
                 == OrderStatus.CANCELED) {
 
             throw new BusinessException(
-                    ErrorCode.INVALID_ORDER_STATUS
+                    ErrorCode.ALREADY_CANCELED
             );
         }
 
@@ -298,10 +298,10 @@ public class OrderService {
     // 결제 도메인에서 사용
     // =========================
     @Transactional
-    public void cancel(Order order) {
+    public void cancel(Order order, String reason) {
 
         // 1. 주문 상태를 취소로 변경
-        order.cancel();
+        order.cancel(reason);
 
 
         // 2. 주문 상품 조회
