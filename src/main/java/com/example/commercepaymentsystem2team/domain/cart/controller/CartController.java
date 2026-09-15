@@ -3,7 +3,6 @@ package com.example.commercepaymentsystem2team.domain.cart.controller;
 import com.example.commercepaymentsystem2team.domain.cart.dto.request.AddCartRequest;
 import com.example.commercepaymentsystem2team.domain.cart.dto.request.UpdatedCartRequest;
 import com.example.commercepaymentsystem2team.domain.cart.dto.response.AddCartResponse;
-import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartItemsResponse;
 import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartResponse;
 import com.example.commercepaymentsystem2team.domain.cart.facade.CartFacade;
 import com.example.commercepaymentsystem2team.domain.cart.service.CartService;
@@ -12,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

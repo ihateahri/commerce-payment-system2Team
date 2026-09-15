@@ -14,8 +14,7 @@ import com.example.commercepaymentsystem2team.domain.order.entity.OrderItem;
 import com.example.commercepaymentsystem2team.domain.order.entity.OrderStatus;
 import com.example.commercepaymentsystem2team.domain.order.repository.OrderItemRepository;
 import com.example.commercepaymentsystem2team.domain.order.repository.OrderRepository;
-import com.example.commercepaymentsystem2team.domain.payment.entity.Payment;
-import com.example.commercepaymentsystem2team.domain.payment.repository.PaymentRepository;
+import com.example.commercepaymentsystem2team.domain.payment.service.PaymentService;
 import com.example.commercepaymentsystem2team.domain.product.entity.Product;
 import com.example.commercepaymentsystem2team.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
-    private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
 
 
     // =========================
@@ -124,15 +123,10 @@ public class OrderService {
 
 
         // 10. 결제 사전 기록 생성
-        Payment payment = new Payment(
+        paymentService.createPayment(
                 savedOrder,
-                Math.toIntExact(
-                        savedOrder.getTotalAmount()
-                ),
-                member
+                Math.toIntExact(savedOrder.getTotalAmount())
         );
-
-        paymentRepository.save(payment);
 
 
         // 11. 주문 생성 결과 반환
@@ -289,6 +283,8 @@ public class OrderService {
         }
 
 
+
+
         return order;
     }
 
@@ -301,20 +297,36 @@ public class OrderService {
     public void cancel(Order order, String reason) {
 
         // 1. 주문 상태를 취소로 변경
-        order.cancel(reason);
-
+        order.cancel("결제 실패");
 
         // 2. 주문 상품 조회
         List<OrderItem> orderItems =
                 orderItemRepository.findByOrder(order);
 
-
-        // 3. 주문했던 수량만큼 재고 복구
+        // 3. 재고 복구
         orderItems.forEach(item ->
                 item.getProduct()
-                        .increaseStock(
-                                item.getQuantity()
-                        )
+                        .increaseStock(item.getQuantity())
         );
     }
+
+    @Transactional
+    public void confirmOrder(Order order) {
+        order.complete();
+    }
+
+    public Order findByIdAndMemberId(Long orderId, Long memberId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new BusinessException(ErrorCode.ORDER_NOT_FOUND)
+                );
+
+        if (!order.isOwnedBy(memberId)) {
+            throw new BusinessException(ErrorCode.NO_AUTHORITY);
+        }
+
+        return order;
+    }
+
 }

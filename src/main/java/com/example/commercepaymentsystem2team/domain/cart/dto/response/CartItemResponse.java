@@ -4,7 +4,7 @@ import com.example.commercepaymentsystem2team.domain.product.entity.ProductStatu
 
 import java.time.LocalDateTime;
 
-public record CartItemsResponse(
+public record CartItemResponse(
         Long cartItemsId,
         Long productId,
         String name,

@@ -2,11 +2,11 @@ package com.example.commercepaymentsystem2team.domain.cart.service;
 
 import com.example.commercepaymentsystem2team.common.exception.BusinessException;
 import com.example.commercepaymentsystem2team.common.exception.ErrorCode;
-import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartItemsResponse;
+import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartItemResponse;
 import com.example.commercepaymentsystem2team.domain.cart.dto.response.CartResponse;
 import com.example.commercepaymentsystem2team.domain.cart.entity.Cart;
-import com.example.commercepaymentsystem2team.domain.cart.entity.CartItems;
-import com.example.commercepaymentsystem2team.domain.cart.repository.CartItemsRepository;
+import com.example.commercepaymentsystem2team.domain.cart.entity.CartItem;
+import com.example.commercepaymentsystem2team.domain.cart.repository.CartItemRepository;
 import com.example.commercepaymentsystem2team.domain.cart.repository.CartRepository;
 import com.example.commercepaymentsystem2team.domain.member.entity.Member;
 import com.example.commercepaymentsystem2team.domain.product.entity.Product;
@@ -24,13 +24,13 @@ import static com.example.commercepaymentsystem2team.common.exception.ErrorCode.
 @RequiredArgsConstructor
 @Transactional
 public class CartService {
-    private final CartItemsRepository cartItemsRepository;
+    private final CartItemRepository cartItemsRepository;
     private final CartRepository cartRepository;
 
     //장바구니 조회
     @Transactional(readOnly = true)
     public CartResponse getCartItems(Long memberId){
-        List<CartItemsResponse> list = cartItemsRepository.findByMemberId(memberId).stream()
+        List<CartItemResponse> list = cartItemsRepository.findByMemberId(memberId).stream()
                 .map(this::toResponse)
                 .toList();
         Long totalPrice = list.stream()
@@ -46,10 +46,10 @@ public class CartService {
         }
         Cart cart = cartRepository.findByMember_Id(member.getId())
                 .orElseGet(()->cartRepository.save(new Cart(member)));
-        Optional<CartItems> existing=cartItemsRepository.findByCart_Member_IdAndProduct_Id(member.getId(), product.getId());
+        Optional<CartItem> existing=cartItemsRepository.findByCart_Member_IdAndProduct_Id(member.getId(), product.getId());
 
         if (existing.isPresent()){
-            CartItems found=existing.get();
+            CartItem found=existing.get();
             int newQuantity = found.getQuantity() + quantity;
             if (newQuantity >product.getStock()){
                 throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
@@ -60,14 +60,14 @@ public class CartService {
             if (quantity>product.getStock()){
                 throw  new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
             }
-            CartItems cartItems = new CartItems(cart, product, quantity);
+            CartItem cartItems = new CartItem(cart, product, quantity);
             return cartItemsRepository.save(cartItems).getId();
         }
     }
 
     //수량 변경
     public void updateQuantity(Long memberId,Long id,Integer quantity){
-        CartItems cartItems =cartItemsRepository.findById(id)
+        CartItem cartItems =cartItemsRepository.findById(id)
                 .filter(ci -> ci.getMemberId().equals(memberId))
                 .orElseThrow(()->new BusinessException(CART_ITEM_NOT_FOUND));
 
@@ -91,8 +91,8 @@ public class CartService {
     }
 
     //
-    private CartItemsResponse toResponse(CartItems cartItems){
-        return new CartItemsResponse(
+    private CartItemResponse toResponse(CartItem cartItems){
+        return new CartItemResponse(
                 cartItems.getId(),
                 cartItems.getProduct().getId(),
                 cartItems.getProduct().getName(),

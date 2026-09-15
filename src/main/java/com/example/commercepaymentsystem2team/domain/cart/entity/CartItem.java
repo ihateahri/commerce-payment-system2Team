@@ -16,7 +16,7 @@ import static com.example.commercepaymentsystem2team.common.exception.ErrorCode.
 @Table(name = "Cart_Items",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"cart_id","product_id"})
 })
-public class CartItems extends BaseEntity {
+public class CartItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +32,7 @@ public class CartItems extends BaseEntity {
     @Column(nullable = false,columnDefinition = "int UNSIGNED DEFAULT 1")
     private Integer quantity;
 
-    public CartItems(Cart cart, Product product, Integer quantity) {
+    public CartItem(Cart cart, Product product, Integer quantity) {
         this.cart = cart;
         this.product = product;
         if (quantity<1){
