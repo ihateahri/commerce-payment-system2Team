@@ -9,7 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "product")
+@Table(name = "product", indexes = {
+        @Index(name = "idx_status_category_price", columnList = "status, category,price"),
+        @Index(name = "idx_status_price", columnList = "status,price"),
+        @Index(name = "idx_status_created_at", columnList = "status,created_at")
+    }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Product extends BaseEntity {
@@ -18,13 +23,13 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false,length = 100)
+    @Column(nullable = false, length = 100)
 
     private String name;
-    @Column(nullable = false,columnDefinition = "BIGINT UNSIGNED")
+    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long price;
 
-    @Column(nullable = false,columnDefinition = "INT UNSIGNED DEFAULT 0")
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED DEFAULT 0")
     private Integer stock;
 
     @Column(columnDefinition = "TEXT")
