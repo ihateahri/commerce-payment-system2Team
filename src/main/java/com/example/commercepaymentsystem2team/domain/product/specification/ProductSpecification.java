@@ -18,12 +18,12 @@ public class ProductSpecification {
 
     //최소값
     public static Specification<Product> priceGte(Long minPrice){
-        return (root,query,cb)->minPrice==null ? null : cb.equal(root.get("Price"), minPrice);
+        return (root,query,cb)->minPrice==null ? null : cb.greaterThanOrEqualTo(root.get("price"), minPrice);
     }
 
     //최고가 있을시
     public static Specification<Product> priceLte(Long maxPrice){
-        return (root,query,cb)->maxPrice==null ? null : cb.equal(root.get("Price"), maxPrice);
+        return (root,query,cb)->maxPrice==null ? null : cb.lessThanOrEqualTo(root.get("price"), maxPrice);
     }
 
     //판매상태 있을시
