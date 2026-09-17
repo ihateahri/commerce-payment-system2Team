@@ -40,6 +40,7 @@ public class ProductService {
                 minPrice,
                 maxPrice,
                 VISIBLE_STATUSES,
+                sort,
                 pageable
         );
 
