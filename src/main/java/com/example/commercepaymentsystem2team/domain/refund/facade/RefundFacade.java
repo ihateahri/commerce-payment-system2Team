@@ -22,20 +22,17 @@ public class RefundFacade {
 
     @Transactional
     public RefundResponse cancel(RefundRequest request, Long memberId) {
-        Order order = orderService.getCancelableOrder(request.orderId(), memberId);
 
+        Order order = orderService.getCancelableOrder(request.orderId(), memberId);
         Payment payment = paymentService.findByOrderIdAndMemberId(order.getId(), memberId);
 
         Refund refund = null;
-
         boolean wasPaid = payment.isPaid();
 
         paymentService.cancelPayment(payment);
-
         if (wasPaid) {
             refund = refundService.create(payment, request.reason());
         }
-
         orderService.cancel(order, request.reason());
 
         return RefundResponse.of(order, payment, refund, request.reason());

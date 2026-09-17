@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
         @Index(name = "idx_status_category_price", columnList = "status, category,price"),
         @Index(name = "idx_status_price", columnList = "status,price"),
         @Index(name = "idx_status_created_at", columnList = "status,created_at")
-    }
+}
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -71,7 +71,6 @@ public class Product extends BaseEntity {
                     ErrorCode.INSUFFICIENT_STOCK
             );
         }
-
         this.stock -= quantity;
     }
 

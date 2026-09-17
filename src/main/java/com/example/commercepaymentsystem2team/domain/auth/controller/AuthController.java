@@ -22,14 +22,18 @@ public class AuthController {
 
     //회원가입
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<Void> signup(
+            @Valid @RequestBody SignupRequest request
+    ) {
         authService.signup(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     //로그인
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request
+    ) {
         return ResponseEntity.ok(authService.login(request));
     }
 }

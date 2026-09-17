@@ -59,7 +59,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** API 요청은 리다이렉트 대신 JSON 401 을 유지한다 */
+    /**
+     * API 요청은 리다이렉트 대신 JSON 401 을 유지한다
+     */
     private AuthenticationEntryPoint jsonAuthenticationEntryPoint() {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

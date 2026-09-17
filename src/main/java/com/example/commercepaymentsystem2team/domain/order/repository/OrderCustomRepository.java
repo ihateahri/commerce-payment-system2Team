@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface OrderCustomRepository {
+
     Page<Order> findAllByMemberId(Long memberId, Pageable pageable);
 
     Optional<Order> findByIdAndMemberId(Long orderId, Long memberId);

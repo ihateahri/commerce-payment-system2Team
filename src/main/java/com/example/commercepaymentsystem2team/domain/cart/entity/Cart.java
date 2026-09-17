@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "Cart",uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"member_id"})
+@Table(name = "Cart", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"member_id"}
+        )
 })
 public class Cart extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

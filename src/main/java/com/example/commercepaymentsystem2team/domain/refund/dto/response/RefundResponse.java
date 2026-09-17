@@ -27,9 +27,9 @@ public record RefundResponse(
         LocalDateTime refundedAt = null;
 
         if (refund != null) {
-           refundId = refund.getId();
-           refundAmount = refund.getAmount();
-           refundedAt = refund.getCreatedAt();
+            refundId = refund.getId();
+            refundAmount = refund.getAmount();
+            refundedAt = refund.getCreatedAt();
         }
 
         return new RefundResponse(

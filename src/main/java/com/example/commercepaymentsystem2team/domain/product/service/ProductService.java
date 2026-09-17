@@ -24,17 +24,23 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProductService {
+
     private final ProductRepository productRepository;
 
-    private static final List<ProductStatus> VISIBLE_STATUSES= List.of(ProductStatus.ON_SALE,ProductStatus.SOLD_OUT);
+    private static final List<ProductStatus> VISIBLE_STATUSES = List.of(ProductStatus.ON_SALE, ProductStatus.SOLD_OUT);
 
     //전체 조회
-    public PageResponse<ProductResponse> findAll(int page, int size, ProductCategory category, Long minPrice, Long maxPrice, String sort) {
-
-        validatePriceRange(minPrice,maxPrice);
+    public PageResponse<ProductResponse> findAll(
+            int page,
+            int size,
+            ProductCategory category,
+            Long minPrice,
+            Long maxPrice,
+            String sort
+    ) {
+        validatePriceRange(minPrice, maxPrice);
 
         Pageable pageable = PageRequest.of(page, size);
-
         Page<Product> result = productRepository.findAllByCondition(
                 category,
                 minPrice,
@@ -43,60 +49,59 @@ public class ProductService {
                 sort,
                 pageable
         );
-
-        List<ProductResponse> content= result.getContent().stream()
+        List<ProductResponse> content = result.getContent().stream()
                 .map(this::toList)
                 .toList();
-        return PageResponse.of(content,page,size,result.getTotalElements());
+        return PageResponse.of(content, page, size, result.getTotalElements());
     }
 
-    private void validatePriceRange(Long minPrice, Long maxPrice){
-        if (minPrice != null && minPrice < 0){
+    private void validatePriceRange(Long minPrice, Long maxPrice) {
+        if (minPrice != null && minPrice < 0) {
             throw new BusinessException(ErrorCode.INVALID_PRICE);
         }
-        if (maxPrice != null && maxPrice < 0){
+        if (maxPrice != null && maxPrice < 0) {
             throw new BusinessException(ErrorCode.INVALID_PRICE);
         }
-        if (minPrice != null && maxPrice != null && minPrice > maxPrice){
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
             throw new BusinessException(ErrorCode.INVALID_PRICE_RANGE);
         }
     }
 
-    private Sort resolveSort(String sort){
-        if (sort==null || sort.equals("LATEST")){
+    private Sort resolveSort(String sort) {
+        if (sort == null || sort.equals("LATEST")) {
             return Sort.by("createdAt").descending();
         }
-        return switch (sort){
-            case "PRICE_ASC" ->Sort.by("price").ascending();
-            case "PRICE_DESC" ->Sort.by("price").descending();
+        return switch (sort) {
+            case "PRICE_ASC" -> Sort.by("price").ascending();
+            case "PRICE_DESC" -> Sort.by("price").descending();
             default -> throw new BusinessException(ErrorCode.INVALID_SORT);
         };
     }
 
     //단건 조회
-    public ProductDetailsResponse findById(Long id){
+    public ProductDetailsResponse findById(Long id) {
         Product product = findProductEntity(id);
         return toDetails(product);
     }
 
     //수정
     @Transactional
-    public ProductDetailsResponse update(Long id, UpdateRequest request){
+    public ProductDetailsResponse update(Long id, UpdateRequest request) {
         Product product = findProductEntity(id);
         product.update(
                 request.name(),
                 request.price(),
                 request.description(),
-                request.category());
+                request.category()
+        );
         return toDetails(product);
-
     }
 
-    public Product findProductEntity(Long id){
-        return productRepository.findById(id).orElseThrow(()->new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+    public Product findProductEntity(Long id) {
+        return productRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     } // 추후 다른 도메인에서 상품 엔티티 사용할때
 
-    public ProductResponse toList(Product product){
+    public ProductResponse toList(Product product) {
         return new ProductResponse(
                 product.getId(),
                 product.getName(),
@@ -106,7 +111,8 @@ public class ProductService {
                 product.getCreatedAt()
         );
     }
-    public ProductDetailsResponse toDetails(Product product){
+
+    public ProductDetailsResponse toDetails(Product product) {
         return new ProductDetailsResponse(
                 product.getId(),
                 product.getName(),

@@ -53,5 +53,4 @@ public class PaymentService {
         Payment payment = findByOrderIdAndMemberId(orderId, memberId);
         return PaymentDetailResponse.from(payment);
     }
-
 }

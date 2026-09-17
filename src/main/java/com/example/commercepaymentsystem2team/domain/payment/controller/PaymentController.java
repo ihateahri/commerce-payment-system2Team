@@ -22,14 +22,16 @@ public class PaymentController {
     @PostMapping("/confirm")
     public ResponseEntity<ApiResponse<PaymentResponse>> confirmPayment(
             @AuthenticationPrincipal Long memberId,
-            @RequestBody PaymentRequest request) {
+            @RequestBody PaymentRequest request
+    ) {
         return ResponseEntity.ok(ApiResponse.ok(paymentCommandService.tryPayment(request, memberId)));
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<ApiResponse<PaymentDetailResponse>> getPayment(
             @AuthenticationPrincipal Long memberId,
-            @PathVariable Long orderId) {
+            @PathVariable Long orderId
+    ) {
         return ResponseEntity.ok(ApiResponse.ok(paymentService.getPayment(orderId, memberId)));
     }
 }

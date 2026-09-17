@@ -11,15 +11,20 @@ import lombok.NoArgsConstructor;
 @Table(name = "members")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(length = 50, nullable = false)
     private String name;
-    @Column(length = 100, nullable = false, unique = true )
+
+    @Column(length = 100, nullable = false, unique = true)
     private String email;
+
     @Column(length = 20, nullable = false, unique = true)
     private String phoneNumber;
+
     @Column(nullable = false, length = 255)
     private String password;
 
@@ -29,6 +34,4 @@ public class Member extends BaseEntity {
         this.password = password;
         this.phoneNumber = phoneNumber;
     }
-
-
 }

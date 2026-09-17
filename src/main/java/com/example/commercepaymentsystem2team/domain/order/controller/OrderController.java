@@ -22,7 +22,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-
     // =========================
     // 주문 생성
     // =========================
@@ -31,13 +30,8 @@ public class OrderController {
             @AuthenticationPrincipal Long memberId,
             @Valid @RequestBody OrderCreateRequest request
     ) {
-
-        OrderCreateResponse response =
-                orderService.createOrder(memberId, request);
-
-        return ResponseEntity.ok(
-                ApiResponse.ok(response)
-        );
+        OrderCreateResponse response = orderService.createOrder(memberId, request);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
 
@@ -49,13 +43,8 @@ public class OrderController {
             @AuthenticationPrincipal Long memberId,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-
-        OrderPageResponse response =
-                orderService.getOrderList(memberId, pageable);
-
-        return ResponseEntity.ok(
-                ApiResponse.ok(response)
-        );
+        OrderPageResponse response = orderService.getOrderList(memberId, pageable);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
 
@@ -67,13 +56,8 @@ public class OrderController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long orderId
     ) {
-
-        OrderDetailResponse response =
-                orderService.getOrderDetail(memberId, orderId);
-
-        return ResponseEntity.ok(
-                ApiResponse.ok(response)
-        );
+        OrderDetailResponse response = orderService.getOrderDetail(memberId, orderId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
 
@@ -84,12 +68,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderPreviewResponse>> previewOrder(
             @Valid @RequestBody OrderCreateRequest request
     ) {
-
-        OrderPreviewResponse response =
-                orderService.previewOrder(request);
-
-        return ResponseEntity.ok(
-                ApiResponse.ok(response)
-        );
+        OrderPreviewResponse response = orderService.previewOrder(request);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

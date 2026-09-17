@@ -13,8 +13,6 @@ public class RefundService {
     private final RefundRepository refundRepository;
 
     public Refund create(Payment payment, String reason) {
-        return refundRepository.save(
-                new Refund(payment, reason, payment.getAmount())
-        );
+        return refundRepository.save(new Refund(payment, reason, payment.getAmount()));
     }
 }

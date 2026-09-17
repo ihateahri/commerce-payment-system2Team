@@ -8,25 +8,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record OrderDetailResponse(
-
         Long orderId,
-
         String orderNumber,
-
         Long totalAmount,
-
         OrderStatus status,
-
         String cancelReason,
-
         LocalDateTime createdAt,
-
         List<OrderItemResponse> items
-
 ) {
-
     public static OrderDetailResponse from(Order order) {
-
         List<OrderItemResponse> items =
                 order.getOrderItems()
                         .stream()
@@ -44,21 +34,13 @@ public record OrderDetailResponse(
         );
     }
 
-
     public record OrderItemResponse(
-
             Long productId,
-
             String productName,
-
             int quantity,
-
             Long orderPrice,
-
             Long totalPrice
-
     ) {
-
         public static OrderItemResponse from(OrderItem orderItem) {
 
             return new OrderItemResponse(

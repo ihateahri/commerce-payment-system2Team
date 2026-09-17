@@ -13,6 +13,5 @@ public record CartItemResponse(
         ProductStatus status,
         LocalDateTime createdAt,
         Integer stock
-
 ) {
 }

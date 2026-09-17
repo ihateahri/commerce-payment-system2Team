@@ -23,13 +23,13 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     Optional<Product> findByName(String name);
 
     @Query("""
-        SELECT p
-        FROM Product p
-        WHERE (:category IS NULL OR p.category = :category)
-          AND (:minPrice IS NULL OR p.price >= :minPrice)
-          AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-          AND p.status IN :visibleStatuses
-        """)
+            SELECT p
+            FROM Product p
+            WHERE (:category IS NULL OR p.category = :category)
+              AND (:minPrice IS NULL OR p.price >= :minPrice)
+              AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+              AND p.status IN :visibleStatuses
+            """)
     Page<Product> findAllByCondition(
             @Param("category") ProductCategory category,
             @Param("minPrice") Long minPrice,

@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 public record RefundRequest(
         @NotNull
         Long orderId,
-
         @NotBlank
         @Size(max = 100)
         String reason

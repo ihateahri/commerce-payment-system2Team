@@ -49,8 +49,12 @@ public class AuthService {
         return new AuthResponse(token, toMemberInfo(member));
     }
 
-
     private AuthResponse.MemberInfo toMemberInfo(Member member) {
-        return new AuthResponse.MemberInfo(member.getId(), member.getName(), member.getEmail(), member.getPhoneNumber());
+        return new AuthResponse.MemberInfo(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getPhoneNumber()
+        );
     }
 }

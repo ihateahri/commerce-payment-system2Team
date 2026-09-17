@@ -30,7 +30,6 @@ public class OrderItem {
     @Column(nullable = false)
     private Long orderPrice;
 
-
     private OrderItem(
             Product product,
             int quantity,
@@ -41,7 +40,6 @@ public class OrderItem {
         this.orderPrice = orderPrice;
     }
 
-
     public static OrderItem create(
             Product product,
             int quantity,
@@ -50,11 +48,9 @@ public class OrderItem {
         return new OrderItem(product, quantity, orderPrice);
     }
 
-
     public void setOrder(Order order) {
         this.order = order;
     }
-
 
     public Long getTotalPrice() {
         return orderPrice * quantity;

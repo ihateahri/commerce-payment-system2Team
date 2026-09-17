@@ -8,4 +8,5 @@ public record MemberResponse(
         String email,
         String phoneNumber,
         LocalDateTime createdAt
-) {}
+) {
+}

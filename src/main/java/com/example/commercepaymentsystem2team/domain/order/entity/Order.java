@@ -1,9 +1,9 @@
 package com.example.commercepaymentsystem2team.domain.order.entity;
 
-import com.example.commercepaymentsystem2team.domain.member.entity.Member;
 import com.example.commercepaymentsystem2team.common.entity.BaseEntity;
 import com.example.commercepaymentsystem2team.common.exception.BusinessException;
 import com.example.commercepaymentsystem2team.common.exception.ErrorCode;
+import com.example.commercepaymentsystem2team.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -53,7 +53,6 @@ public class Order extends BaseEntity {
         this.member = member;
         this.orderNumber = orderNumber;
         this.totalAmount = totalAmount;
-
         this.status = OrderStatus.PENDING_PAYMENT;
     }
 
@@ -79,11 +78,9 @@ public class Order extends BaseEntity {
     }
 
     public void cancel(String reason) {
-
         if (this.status == OrderStatus.CANCELED) {
             throw new BusinessException(ErrorCode.ALREADY_CANCELED);
         }
-
         this.status = OrderStatus.CANCELED;
         this.cancelReason = reason;
     }

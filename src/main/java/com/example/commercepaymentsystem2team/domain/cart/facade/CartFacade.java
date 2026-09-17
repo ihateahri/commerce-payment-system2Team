@@ -19,9 +19,9 @@ public class CartFacade {
     private final ProductService productService;
 
     @Transactional
-    public Long addItem(Long memberId, AddCartRequest request){
+    public Long addItem(Long memberId, AddCartRequest request) {
         Member member = memberService.findMember(memberId);
         Product product = productService.findProductEntity(request.productId());
-        return cartService.addItem(member, product,request.quantity());
+        return cartService.addItem(member, product, request.quantity());
     }
 }
