@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server'
+export async function GET(_: Request, { params }: { params: Promise<{ orderId: string }> }) { const { orderId } = await params; return NextResponse.json({ success: true, data: { orderId: Number(orderId), orderNumber: 'ORDER-001', totalAmount: 25000, status: 'PENDING_PAYMENT', cancelReason: null, createdAt: '2026-09-09T14:30:00', items: [{ productId: 1, productName: 'Galaxy 스마트폰', quantity: 2, orderPrice: 10000, totalPrice: 20000 }, { productId: 3, productName: '고해상도 태블릿', quantity: 1, orderPrice: 5000, totalPrice: 5000 }] } }) }

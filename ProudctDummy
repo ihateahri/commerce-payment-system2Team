@@ -3,12 +3,12 @@ SET SESSION cte_max_recursion_depth = 100000;
 INSERT INTO product (name, price, stock, description, status, category, created_at, updated_at)
 SELECT
     CONCAT(
-            ELT(1 + FLOOR(RAND() * 6),
-                '스마트폰', '노트북', '태블릿', '이어폰', '스마트워치', '모니터'),
-            ' ',
-            ELT(1 + FLOOR(RAND() * 5), 'Pro', 'Lite', 'Plus', 'Air', 'Max'),
-            ' ',
-            FLOOR(RAND() * 900 + 100)
+        ELT(cat_idx,
+            '스마트폰', '노트북', '태블릿', '이어폰', '스마트워치', '모니터'),
+        ' ',
+        ELT(1 + FLOOR(RAND() * 5), 'Pro', 'Lite', 'Plus', 'Air', 'Max'),
+        ' ',
+        FLOOR(RAND() * 900 + 100)
     ) AS name,
     (FLOOR(RAND() * 300) + 1) * 10000 AS price,
     FLOOR(RAND() * 201) AS stock,
@@ -18,15 +18,15 @@ SELECT
         WHEN RAND() < 0.9 THEN 'SOLD_OUT'
         ELSE 'DISCONTINUED'
         END AS status,
-    ELT(1 + FLOOR(RAND() * 6),
+    ELT(cat_idx,
         'SMARTPHONE', 'LAPTOP', 'TABLET', 'EARPHONES', 'SMARTWATCH', 'MONITOR') AS category,
     DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 730) DAY) - INTERVAL FLOOR(RAND() * 86400) SECOND AS created_at,
     NOW() AS updated_at
 FROM (
-         WITH RECURSIVE seq_gen AS (
-             SELECT 1 AS seq
-             UNION ALL
-             SELECT seq + 1 FROM seq_gen WHERE seq < 60000
-         )
-         SELECT seq FROM seq_gen
-     ) AS numbers;
+    WITH RECURSIVE seq_gen AS (
+        SELECT 1 AS seq
+        UNION ALL
+        SELECT seq + 1 FROM seq_gen WHERE seq < 60000
+    )
+    SELECT seq, 1 + FLOOR(RAND() * 6) AS cat_idx FROM seq_gen
+) AS numbers;
