@@ -30,7 +30,7 @@ public class CartService {
     //장바구니 조회
     @Transactional(readOnly = true)
     public CartResponse getCartItems(Long memberId){
-        List<CartItemResponse> list = cartItemsRepository.findByMemberId(memberId).stream()
+        List<CartItemResponse> list = cartItemsRepository.findAllByMemberId(memberId).stream()
                 .map(this::toResponse)
                 .toList();
         Long totalPrice = list.stream()

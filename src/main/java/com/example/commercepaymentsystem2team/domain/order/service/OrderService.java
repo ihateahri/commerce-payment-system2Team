@@ -142,24 +142,12 @@ public class OrderService {
     ) {
 
         Order order = orderRepository
-                .findById(orderId)
+                .findByIdAndMemberId(orderId, memberId)
                 .orElseThrow(() ->
                         new BusinessException(
                                 ErrorCode.ORDER_NOT_FOUND
                         )
                 );
-
-
-        // 본인의 주문인지 확인
-        if (!order.getMember()
-                .getId()
-                .equals(memberId)) {
-
-            throw new BusinessException(
-                    ErrorCode.NO_AUTHORITY
-            );
-        }
-
 
         return OrderDetailResponse.from(order);
     }
@@ -174,7 +162,7 @@ public class OrderService {
     ) {
 
         Page<Order> orderPage =
-                orderRepository.findByMemberId(
+                orderRepository.findAllByMemberId(
                         memberId,
                         pageable
                 );

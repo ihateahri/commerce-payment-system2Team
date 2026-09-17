@@ -9,10 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CartItemRepository extends JpaRepository<CartItem,Long> {
-
-    @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.cart.member.id= :memberId")
-    List<CartItem> findByMemberId(@Param("memberId") Long memberId);
+public interface CartItemRepository extends JpaRepository<CartItem,Long>, CartItemCustomRepository {
 
     Optional<CartItem> findByCart_Member_IdAndProduct_Id(Long memberId, Long productId);
 

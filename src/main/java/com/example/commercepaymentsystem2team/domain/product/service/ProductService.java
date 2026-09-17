@@ -35,14 +35,16 @@ public class ProductService {
 
         validatePriceRange(minPrice,maxPrice);
 
-        Pageable pageable = PageRequest.of(page, size, resolveSort(sort));
+        Pageable pageable = PageRequest.of(page, size);
 
-        Specification<Product> spec = Specification.where(ProductSpecification.statusIn(VISIBLE_STATUSES))
-                .and(ProductSpecification.hasCategory(category))
-                .and(ProductSpecification.priceGte(minPrice))
-                .and(ProductSpecification.priceLte(maxPrice));
-
-        Page<Product> result=productRepository.findAll(spec,pageable);
+        Page<Product> result = productRepository.findAllByCondition(
+                category,
+                minPrice,
+                maxPrice,
+                VISIBLE_STATUSES,
+                sort,
+                pageable
+        );
 
         List<ProductResponse> content= result.getContent().stream()
                 .map(this::toList)
