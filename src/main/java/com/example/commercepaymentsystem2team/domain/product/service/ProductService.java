@@ -6,17 +6,15 @@ import com.example.commercepaymentsystem2team.domain.product.dto.request.UpdateR
 import com.example.commercepaymentsystem2team.domain.product.dto.response.PageResponse;
 import com.example.commercepaymentsystem2team.domain.product.dto.response.ProductDetailsResponse;
 import com.example.commercepaymentsystem2team.domain.product.dto.response.ProductResponse;
-import com.example.commercepaymentsystem2team.domain.product.entity.ProductCategory;
 import com.example.commercepaymentsystem2team.domain.product.entity.Product;
+import com.example.commercepaymentsystem2team.domain.product.entity.ProductCategory;
 import com.example.commercepaymentsystem2team.domain.product.entity.ProductStatus;
 import com.example.commercepaymentsystem2team.domain.product.repository.ProductRepository;
-import com.example.commercepaymentsystem2team.domain.product.specification.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +40,6 @@ public class ProductService {
                 minPrice,
                 maxPrice,
                 VISIBLE_STATUSES,
-                sort,
                 pageable
         );
 
