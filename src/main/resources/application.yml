@@ -25,4 +25,9 @@ spring:
 jwt:
   secret: "bXktc3VwZXItc2VjcmV0LWtleS1mb3Itand0LTIwMjY="
   expiration: 3600000
-
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enforce: true
+      force: true
