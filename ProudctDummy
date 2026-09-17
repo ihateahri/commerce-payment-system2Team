@@ -1,14 +1,34 @@
-SET SESSION cte_max_recursion_depth = 100000;
+
+CREATE TEMPORARY TABLE tmp_seq AS
+SELECT
+    (a.n + b.n*10 + c.n*100 + d.n*1000 + e.n*10000 + 1) AS seq,
+    1 + FLOOR(RAND() * 6) AS cat_idx
+FROM
+    (SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+     UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) a
+CROSS JOIN
+    (SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+     UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) b
+CROSS JOIN
+    (SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+     UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) c
+CROSS JOIN
+    (SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+     UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) d
+CROSS JOIN
+    (SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) e
+WHERE (a.n + b.n*10 + c.n*100 + d.n*1000 + e.n*10000 + 1) <= 60000;
+
+
 
 INSERT INTO product (name, price, stock, description, status, category, created_at, updated_at)
 SELECT
     CONCAT(
-        ELT(cat_idx,
-            '스마트폰', '노트북', '태블릿', '이어폰', '스마트워치', '모니터'),
-        ' ',
-        ELT(1 + FLOOR(RAND() * 5), 'Pro', 'Lite', 'Plus', 'Air', 'Max'),
-        ' ',
-        FLOOR(RAND() * 900 + 100)
+            ELT(cat_idx, '스마트폰', '노트북', '태블릿', '이어폰', '스마트워치', '모니터'),
+            ' ',
+            ELT(1 + FLOOR(RAND() * 5), 'Pro', 'Lite', 'Plus', 'Air', 'Max'),
+            ' ',
+            FLOOR(RAND() * 900 + 100)
     ) AS name,
     (FLOOR(RAND() * 300) + 1) * 10000 AS price,
     FLOOR(RAND() * 201) AS stock,
@@ -18,15 +38,25 @@ SELECT
         WHEN RAND() < 0.9 THEN 'SOLD_OUT'
         ELSE 'DISCONTINUED'
         END AS status,
-    ELT(cat_idx,
-        'SMARTPHONE', 'LAPTOP', 'TABLET', 'EARPHONES', 'SMARTWATCH', 'MONITOR') AS category,
+    ELT(cat_idx, 'SMARTPHONE', 'LAPTOP', 'TABLET', 'EARPHONES', 'SMARTWATCH', 'MONITOR') AS category,
     DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 730) DAY) - INTERVAL FLOOR(RAND() * 86400) SECOND AS created_at,
     NOW() AS updated_at
-FROM (
-    WITH RECURSIVE seq_gen AS (
-        SELECT 1 AS seq
-        UNION ALL
-        SELECT seq + 1 FROM seq_gen WHERE seq < 60000
-    )
-    SELECT seq, 1 + FLOOR(RAND() * 6) AS cat_idx FROM seq_gen
-) AS numbers;
+FROM tmp_seq;
+
+
+SELECT COUNT(*) FROM product;
+
+SELECT COUNT(*) AS mismatched
+FROM product
+WHERE id > 30
+  AND (
+    (name LIKE '스마트폰%' AND category != 'SMARTPHONE') OR
+    (name LIKE '노트북%' AND category != 'LAPTOP') OR
+    (name LIKE '태블릿%' AND category != 'TABLET') OR
+    (name LIKE '이어폰%' AND category != 'EARPHONES') OR
+    (name LIKE '스마트워치%' AND category != 'SMARTWATCH') OR
+    (name LIKE '모니터%' AND category != 'MONITOR')
+    );
+
+
+DROP TEMPORARY TABLE tmp_seq;
