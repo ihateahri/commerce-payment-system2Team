@@ -64,14 +64,8 @@ public class OrderService {
                 : request.items()) {
 
             // 상품 조회
-            Product product = productRepository
-                    .findById(itemRequest.productId())
-                    .orElseThrow(() ->
-                            new BusinessException(
-                                    ErrorCode.PRODUCT_NOT_FOUND
-                            )
-                    );
-
+            Product product = productRepository.findByIdWithLock(itemRequest.productId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
             // 3. 재고 검증 + 재고 차감
             product.decreaseStock(
@@ -296,17 +290,16 @@ public class OrderService {
     @Transactional
     public void cancel(Order order, String reason) {
 
-        // 1. 주문 상태를 취소로 변경
-        order.cancel("결제 실패");
+        Order lockedOrder = orderRepository.findByIdWithLock(order.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-        // 2. 주문 상품 조회
+        lockedOrder.cancel(reason);
+
         List<OrderItem> orderItems =
-                orderItemRepository.findByOrder(order);
+                orderItemRepository.findByOrder(lockedOrder);
 
-        // 3. 재고 복구
         orderItems.forEach(item ->
-                item.getProduct()
-                        .increaseStock(item.getQuantity())
+                item.getProduct().increaseStock(item.getQuantity())
         );
     }
 
