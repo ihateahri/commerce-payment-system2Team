@@ -13,12 +13,6 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, OrderCustomRepository {
 
-    Page<Order> findByMemberId(
-            Long memberId,
-            Pageable pageable
-    );
-
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT o FROM Order o WHERE o.id = :id")
     Optional<Order> findByIdWithLock(@Param("id") Long id);
